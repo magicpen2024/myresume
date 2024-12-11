@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}خانه{% endblock %}
+
+{% block content %}
+    
+    <div class="home">
+        <h1>welcome to myresume</h1>
+        <p>لطفاً وارد حساب کاربری خود شوید یا یک حساب جدید ایجاد کنید.</p>
+        <a href="{% url 'register' %}">ثبت‌نام</a> | 
+        <a href="{% url 'login' %}">ورود</a>
+    </div>
+{% endblock %}

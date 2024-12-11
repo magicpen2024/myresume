@@ -15,8 +15,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path ,include
+from home import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('', views.home ,name='home'),#صفحه اصلی
+    path('login/', views.login_view, name='login'),  # مسیر لاگین
+    path('logout/', views.logout_view, name='logout'),  # مسیر لاگ اوت
+    path('register/', views.register, name='register'),  # مسیر ثبت‌نام
+    path('profile/', views.profile, name='profile'),  # مسیر پروفایل
+    path('profile/edit/',views.edit_profile_view , name='edit_profile'),
+    path('resume/create/', views.create_resume_view, name='create_resume'),  # برای ایجاد رزومه
+    path('resume/<int:pk>/edit/', views.edit_resume_view, name='edit_resume'),  # برای ویرایش رزومه
+    path('resume/<int:pk>/delete/', views.delete_resume_view, name='delete_resume'),  # برای حذف رزومه
+    path('prject/create/', views.create_project_view ,name='create_project'),
+    path('notifications/',views.notifications_view , name='nitifications'),
+    path('project/<int:project_id>/apply/', views.create_application_view ,name='create_application'),
+    path('project/<int:project_id>/review/<int:target_user_id>/', views.create_review_view ,name='create_review'),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,12 @@
+import django
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.conf import settings
 from mptt.models import MPTTModel, TreeForeignKey
+from django.conf import settings
+
+user_model=settings.AUTH_USER_MODEL
+print(user_model)
+
 
 # User class remains unchanged, no need for MPTT in this case.
 # -----------------------------------------
@@ -17,11 +22,19 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, username, password=None, **extra_fields):
+        """
+        creat and  return a superuser with is staff and is_superuser set to True.
+        """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, username, password, extra_fields)
+        #if extra_fields.get('is_staff') is not True:
+         #   raise ValueError('Superuser must have is_staff=True.')
+        #if extra_fields.get('is_Superuser') is not True:
+        #    raise ValueError('Superuser must have is_Superuser=True.')
 
-class User(AbstractBaseUser, PermissionsMixin):
+        return self.create_user(email, username, password, **extra_fields)
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50, blank=True, null=True)
@@ -51,8 +64,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True
     )
 
-    def str(self):
+    def __str__(self):
         return self.username
+    
+#profile
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    role = models.CharField(max_length=50, blank=True, null=True)
 
 # -----------------------------------------
 # Resume class with MPTTModel
@@ -83,7 +103,7 @@ class Resume(MPTTModel):
     class MPTTMeta:
         order_insertion_by = ['title']
 
-    def str(self):
+    def __str__(self):
         return f"{self.title} - {self.user.username}"
 
 # -----------------------------------------
@@ -122,7 +142,7 @@ class Project(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['title']
-    def str(self):
+    def __str__(self):
         return f"{self.title} - {self.user.username}"
 
 # Repeat similarly for Application, Review, and Notification if they also require a parent field.
@@ -159,7 +179,7 @@ class Application(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)  # زمان ایجاد درخواست
 
-    def str(self):
+    def __str__(self):
         return f"Application for {self.project.title} by {self.freelancer.username}"
     
 #class reviews
@@ -201,5 +221,5 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)  # وضعیت خوانده شدن
     created_at = models.DateTimeField(auto_now_add=True)  # زمان ایجاد اعلان
 
-    def str(self):
+    def __str__(self):
         return f"Notification for {self.user.username}: {'Read' if self.is_read else 'Unread'}"

@@ -1,0 +1,15 @@
+<!-- create_review.html -->
+{% extends 'base.html' %}
+
+{% block title %}ارسال نظر{% endblock %}
+
+{% block content %}
+<h1>ارسال نظر</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">ارسال نظر</button>
+</form>
+
+{% endblock %}
